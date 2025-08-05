@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -22,35 +24,39 @@ export function RetellWebClient({ agentId, publicKey, onCallStart, onCallEnd }: 
 
   useEffect(() => {
     // Initialize Retell Web Client using the installed package
+   
     try {
-      retellWebClientRef.current = new RetellClient({
-        publicKey: publicKey,
-        onCallStart: () => {
-          console.log('Retell call started');
-          setIsConnected(true);
-          setCallStatus('connected');
-          setIsLoading(false);
-          onCallStart?.();
-        },
-        onCallEnd: () => {
-          console.log('Retell call ended');
-          setIsConnected(false);
-          setCallStatus('idle');
-          setIsLoading(false);
-          onCallEnd?.();
-        },
-        onError: (error: any) => {
-          console.error('Retell Web Client error:', error);
-          setError(error.message || 'Voice call failed');
-          setIsLoading(false);
-          setIsConnected(false);
-          setCallStatus('error');
-        },
-        onUpdate: (update: any) => {
-          console.log('Retell call update:', update);
-          if (update.callStatus) {
-            setCallStatus(update.callStatus);
-          }
+      retellWebClientRef.current = new RetellClient();
+      
+      // Set up event listeners
+      retellWebClientRef.current.on('call_started', () => {
+        console.log('Retell call started');
+        setIsConnected(true);
+        setCallStatus('connected');
+        setIsLoading(false);
+        onCallStart?.();
+      });
+      
+      retellWebClientRef.current.on('call_ended', () => {
+        console.log('Retell call ended');
+        setIsConnected(false);
+        setCallStatus('idle');
+        setIsLoading(false);
+        onCallEnd?.();
+      });
+      
+      retellWebClientRef.current.on('error', (error: any) => {
+        console.error('Retell Web Client error:', error);
+        setError(error.message || 'Voice call failed');
+        setIsLoading(false);
+        setIsConnected(false);
+        setCallStatus('error');
+      });
+      
+      retellWebClientRef.current.on('update', (update: any) => {
+        console.log('Retell call update:', update);
+        if (update.callStatus) {
+          setCallStatus(update.callStatus);
         }
       });
       console.log('Retell Web Client initialized successfully');

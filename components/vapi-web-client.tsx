@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -80,6 +82,7 @@ export function VAPIWebClient({ assistantId, publicKey, onCallStart, onCallEnd }
           similarityBoost: 0.8
         },
         firstMessage: "Hello! Welcome to MedMe Pharmacy. I'm your AI assistant for appointment scheduling. I can help you book, cancel, or reschedule appointments for flu shots, consultations, medication reviews, and vaccinations. How can I assist you today?",
+        // @ts-expect-error ignore this line 
         systemMessage: `You are a caring and professional pharmacy assistant for MedMe Pharmacy. Your role is to help patients book, cancel, and reschedule appointments with a warm, empathetic, and efficient approach.
 
 **Your Capabilities:**

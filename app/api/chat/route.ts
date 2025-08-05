@@ -1,7 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server';
-import { firebaseDataStore } from '@/lib/firebase-datastore';
-import { googleCalendarService } from '@/lib/google-calendar';
-import { format, parseISO, isValid, addDays } from 'date-fns';
 
 export async function POST(request: NextRequest) {
   try {

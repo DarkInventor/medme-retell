@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createWebCall, createVoiceWebCall } from '@/lib/retell-agent';
+import { createVoiceWebCall } from '@/lib/retell-agent';
 
 // Get AI response using OpenAI (since you have the Retell agent configured with OpenAI)
 async function getAIResponse(message: string): Promise<string> {

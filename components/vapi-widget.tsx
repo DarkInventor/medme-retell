@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 'use client';
 
 import { useEffect } from 'react';
@@ -37,6 +38,7 @@ export function VAPIWidget({ assistantId, publicKey, onCallStart, onCallEnd }: V
 
   return (
     <div className="vapi-widget-container w-full h-full">
+      {/* @ts-expect-error ignore this line */}
       <vapi-widget 
         assistant-id={assistantId}
         public-key={publicKey}

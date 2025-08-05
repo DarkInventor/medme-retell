@@ -1,7 +1,6 @@
 'use client';
 
 import AuthGuard from '@/components/auth-guard';
-import { RetellSimpleClient } from '@/components/retell-simple-client';
 
 export default function Home() {
 

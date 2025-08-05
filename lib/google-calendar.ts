@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { google } from 'googleapis';
 import { addHours, format, parseISO, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
 import { TimeSlot, CalendarAvailability } from './types';
 
 const GOOGLE_CLIENT_ID = '480478905629-r1iosri24cjpfm9p1ilpo3krk1v1iqjm.apps.googleusercontent.com';
+
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY || '';
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 

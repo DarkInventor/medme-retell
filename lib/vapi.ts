@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // VAPI AI Client for Voice Integration
 export class VAPIClient {
   private privateKey: string;

@@ -2,10 +2,8 @@
 
 ## Project Overview
 
-This project implements a conversational AI agent for pharmacy appointment scheduling using Retell.ai as the voice/chat platform. The system provides a natural language interface for booking, canceling, and rescheduling pharmacy appointments with full integration to Google Calendar and Firebase data storage.
+This project implements a conversational AI agent for pharmacy appointment scheduling using Retell.ai as the voice/chat platform. The system provides a natural language interface for booking, canceling, and rescheduling pharmacy appointments with full integration to Cal.com for meeting scheduling and Make.com automation that stores all appointment data in Google Sheets.
 
-**Live Demo**: [Deployment URL]  
-**GitHub Repository**: https://github.com/[username]/medme-interview  
 
 ## Architecture & Key Components
 
@@ -35,8 +33,8 @@ The application follows a modern full-stack architecture built on Next.js with t
 ┌─────────────────────────────────────────────────────────────┐
 │                    Business Logic Layer                    │
 │  ┌──────────────────┐  ┌──────────────────┐              │
-│  │ Calendar Service │  │ DataStore Service│              │
-│  │ (Google Calendar)│  │   (Firebase)     │              │
+│  │  Cal.com API     │  │ DataStore Service│              │
+│  │  Integration     │  │   (Firebase)     │              │
 │  └──────────────────┘  └──────────────────┘              │
 └─────────────────────────────────────────────────────────────┘
                             │
@@ -44,7 +42,7 @@ The application follows a modern full-stack architecture built on Next.js with t
 ┌─────────────────────────────────────────────────────────────┐
 │              External Integrations                         │
 │  ┌──────────────────┐  ┌──────────────────┐              │
-│  │   Retell.ai      │  │ Google Calendar  │              │
+│  │   Retell.ai      │  │    Cal.com       │              │
 │  │   Agent API      │  │      API         │              │
 │  └──────────────────┘  └──────────────────┘              │
 │  ┌──────────────────┐  ┌──────────────────┐              │
@@ -64,13 +62,13 @@ The application follows a modern full-stack architecture built on Next.js with t
   - System prompt with caring, empathetic personality
   - Error handling and graceful fallbacks
 
-#### 2. Google Calendar Integration (`lib/google-calendar.ts`)
-- **Purpose**: Manages calendar availability and appointment booking
+#### 2. Cal.com Integration (`lib/cal-com.ts`)
+- **Purpose**: Manages meeting availability and appointment booking through Cal.com
 - **Key Features**:
-  - OAuth2 authentication flow
+  - Cal.com API authentication
   - Business hours enforcement (9 AM - 5 PM, weekdays only)
-  - Conflict detection with existing events
-  - Fallback to mock data when API fails
+  - Real-time availability checking
+  - Direct booking integration with Retell AI for voice and chat
 
 #### 3. Firebase Data Store (`lib/firebase-datastore.ts`)
 - **Purpose**: Persistent storage for appointment records and patient data
@@ -81,13 +79,13 @@ The application follows a modern full-stack architecture built on Next.js with t
   - Date/time handling with proper serialization
 
 #### 4. Webhook Handler (`app/api/retell/webhook/route.ts`)
-- **Purpose**: Processes function calls from Retell agent
+- **Purpose**: Processes function calls from Retell agent and integrates with Cal.com
 - **Key Functions**:
-  - `check_availability`: Queries calendar for open slots
-  - `book_appointment`: Creates new appointments
-  - `find_appointment`: Locates existing bookings
-  - `cancel_appointment`: Cancels bookings
-  - `reschedule_appointment`: Moves appointments to new times
+  - `check_availability`: Queries Cal.com for available meeting slots
+  - `book_appointment`: Creates new appointments via Cal.com API
+  - `find_appointment`: Locates existing bookings through Cal.com
+  - `cancel_appointment`: Cancels bookings via Cal.com
+  - `reschedule_appointment`: Reschedules appointments through Cal.com API
 
 #### 5. Frontend Interface (`components/retell-simple-client.tsx`)
 - **Purpose**: Web-based voice call interface
@@ -110,11 +108,11 @@ The application follows a modern full-stack architecture built on Next.js with t
   - **Alternatives considered**: VAPI, Livekit
   - **Key advantage**: Seamless transition from chat to voice with minimal code changes
 
-### Calendar Integration
-- **Google Calendar API**:
-  - **Why chosen**: Reliable, well-documented, widely adopted
-  - **Integration**: OAuth2 flow with proper token management
-  - **Features**: Conflict detection, availability checking, event creation
+### Meeting Scheduling Integration
+- **Cal.com API**:
+  - **Why chosen**: Built specifically for appointment scheduling, excellent API, seamless integration with Retell AI
+  - **Integration**: Direct API integration with webhook support for real-time booking
+  - **Features**: Availability checking, meeting booking, automated scheduling, voice/chat booking support
 
 ### Data Storage
 - **Firebase Firestore**:
@@ -123,10 +121,10 @@ The application follows a modern full-stack architecture built on Next.js with t
   - **Advantages**: NoSQL flexibility, automatic scaling, real-time updates
 
 - **Make.com + Google Sheets Integration**:
-  - **Purpose**: Additional data logging and workflow automation
-  - **Implementation**: Webhook automation that logs each conversation to Google Sheets
+  - **Purpose**: Primary data storage and workflow automation through Google Sheets
+  - **Implementation**: Automated workflow that captures all appointment data from Cal.com and Retell AI conversations, storing everything in Google Sheets
   - **Live Data**: [Appointment Logs Spreadsheet](https://docs.google.com/spreadsheets/d/1vGtbxlwA84X9XxmNA--_5UoMWgEBEfFvZhKymcZhE_w/edit?gid=0#gid=0)
-  - **Benefits**: Easy data analysis, business reporting, backup logging
+  - **Benefits**: Centralized data storage, real-time appointment tracking, easy data analysis, business reporting, automated backup
 
 ### Frontend Libraries
 - **Retell Client JS SDK**: Official SDK for voice/chat integration
@@ -154,17 +152,19 @@ The system includes an additional data logging layer using Make.com automation p
 ![Make.com Flow](screenshot-make-flow.png)
 
 **Automation Flow**:
-1. **Webhooks (Step 1)**: Receives Retell.ai conversation data via custom webhook
-2. **Router (Step 2)**: Processes and routes the webhook data  
-3. **Google Sheets (Step 6)**: Adds new row to spreadsheet with conversation details
+1. **Webhooks (Step 1)**: Receives appointment data from both Cal.com bookings and Retell.ai conversations
+2. **Router (Step 2)**: Processes and routes the webhook data from multiple sources
+3. **Data Processing (Step 3-5)**: Enriches appointment data with customer details and conversation context
+4. **Google Sheets (Step 6)**: Stores all appointment and conversation data as primary data storage solution
 
 **Live Data**: Each chat conversation automatically creates a new row in the [Appointment Logs Spreadsheet](https://docs.google.com/spreadsheets/d/1vGtbxlwA84X9XxmNA--_5UoMWgEBEfFvZhKymcZhE_w/edit?gid=0#gid=0)
 
 This provides:
-- Real-time conversation logging
-- Business analytics and reporting
-- Backup data storage
-- Easy data export capabilities
+- Centralized appointment data storage in Google Sheets
+- Real-time booking and conversation logging
+- Comprehensive business analytics and reporting
+- Automated data synchronization between Cal.com and chat/voice interactions
+- Easy data export and integration capabilities
 
 ### Retell Agent Function Definition
 ```typescript
@@ -196,24 +196,29 @@ This provides:
 }
 ```
 
-### Google Calendar Availability Check
+### Cal.com Availability Check
 ```typescript
 async getAvailableSlots(date: Date): Promise<TimeSlot[]> {
-  const events = await this.calendar.events.list({
-    calendarId: 'primary',
-    timeMin: startOfDay(date).toISOString(),
-    timeMax: endOfDay(date).toISOString(),
-    singleEvents: true,
-    orderBy: 'startTime'
+  const response = await fetch(`https://api.cal.com/v1/availability`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${process.env.CAL_COM_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    params: {
+      dateFrom: startOfDay(date).toISOString(),
+      dateTo: endOfDay(date).toISOString(),
+      eventTypeId: process.env.CAL_COM_EVENT_TYPE_ID
+    }
   });
 
-  // Generate business hour slots and check conflicts
-  for (let hour = 9; hour < 17; hour++) {
-    const slotStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0);
-    const isAvailable = !events.data.items?.some(event => {
-      // Conflict detection logic
-    });
-  }
+  // Process Cal.com availability response
+  const availability = await response.json();
+  return availability.slots.map(slot => ({
+    start: new Date(slot.start),
+    end: new Date(slot.end),
+    available: slot.available
+  }));
 }
 ```
 
@@ -248,10 +253,11 @@ catch (error) {
 }
 ```
 
-#### 2. **Calendar Integration Failures**
-- Google Calendar API failures fall back to mock data
-- OAuth token refresh handled automatically
-- Clear error messages for authentication issues
+#### 2. **Cal.com Integration Failures**
+- Cal.com API failures fall back to alternative booking methods
+- API key authentication handled securely
+- Clear error messages for booking issues
+- Automatic retry mechanisms for failed bookings
 
 #### 3. **Data Validation**
 - Date format validation using `date-fns` `isValid()`
@@ -290,9 +296,9 @@ catch (error) {
    - Provide invalid date formats
 
 3. **Integration Testing**:
-   - Calendar API connectivity
-   - Firebase data persistence
-   - Retell webhook functionality
+   - Cal.com API connectivity and booking flow
+   - Make.com automation with Google Sheets data storage
+   - Retell AI webhook functionality with Cal.com integration
 
 ### Test Data Setup
 - Pre-populated calendar with busy slots at 10 AM and 2 PM
@@ -300,8 +306,9 @@ catch (error) {
 - Mock patient data for testing various scenarios
 
 ### Known Limitations for Testing
-- Google Calendar API requires OAuth setup
+- Cal.com API requires API key and event type configuration
 - Retell.ai requires webhook URL (use ngrok for local testing)
+- Make.com automation requires webhook setup for Google Sheets integration
 - Firebase requires project configuration
 
 ## "If I Had More Time..." Improvements
@@ -312,11 +319,11 @@ catch (error) {
    - Multi-factor authentication for sensitive operations
    - Session management and user accounts
 
-2. **Advanced Calendar Features**:
-   - Multiple calendar support for different services
-   - Provider availability management
-   - Appointment duration customization
-   - Recurring appointment patterns
+2. **Advanced Cal.com Features**:
+   - Multiple event type support for different services
+   - Provider availability management across team members
+   - Custom appointment duration and buffer times
+   - Recurring appointment patterns and series booking
 
 3. **Better Error Recovery**:
    - Retry mechanisms with exponential backoff
@@ -345,10 +352,10 @@ catch (error) {
 
 ### Scalability & Production Readiness
 1. **Infrastructure**:
-   - Redis caching for calendar data
-   - Database indexing optimization
+   - Redis caching for Cal.com availability data
+   - Google Sheets API optimization for large datasets
    - CDN for static assets
-   - Load balancing for high traffic
+   - Load balancing for high traffic and concurrent bookings
 
 2. **Security**:
    - Rate limiting on API endpoints
@@ -365,8 +372,8 @@ catch (error) {
 ## Key Features Delivered
 
 ✅ **Natural Language Flow**: Collects appointment type, date/time, patient info  
-✅ **Calendar Integration**: Google Calendar API with availability checking  
-✅ **Data Storage**: Firebase Firestore for appointment logging  
+✅ **Meeting Scheduling**: Cal.com API integration with real-time availability and booking  
+✅ **Data Storage**: Make.com automation storing all data in Google Sheets with Firebase backup  
 ✅ **Edge Case Handling**: Unavailable slots, missing info, API failures  
 ✅ **Voice-Ready Architecture**: Built on Retell.ai platform  
 ✅ **Error Recovery**: Graceful fallbacks and user-friendly messages  
@@ -378,14 +385,6 @@ catch (error) {
 - Agent ID: `agent_fa18dcd11913e3ccde2931ddfc`
 - Public Key: `public_key_73c641de4f51ee6bdc6a9`
 - Webhook URL: `/api/retell/webhook`
-
-### Environment Variables Required
-```
-RETELL_API_KEY=key_55cdcd1c37839f5b8e4fd9958827
-GOOGLE_CLIENT_SECRET=[your-secret]
-GOOGLE_REFRESH_TOKEN=[your-token]
-NEXT_PUBLIC_FIREBASE_API_KEY=[your-key]
-```
 
 ---
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { googleCalendarService } from '@/lib/google-calendar';
 import { firebaseDataStore } from '@/lib/firebase-datastore';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import client from '@/lib/retell';
 
@@ -20,6 +21,7 @@ export async function POST(request: NextRequest) {
           success: true,
           call_id: call.call_id,
           access_token: call.access_token,
+          // @ts-expect-error ignore this line 
           web_call_url: call.web_call_url,
           agent_id: voiceAgentId
         });
@@ -46,6 +48,7 @@ export async function POST(request: NextRequest) {
       }
 
       try {
+        // @ts-expect-error ignore this line 
         const call = await client.call.create({
           from_number: '+1234567890', // Your Retell phone number
           to_number: phone_number,

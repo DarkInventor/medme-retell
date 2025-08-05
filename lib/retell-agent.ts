@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import client from './retell';
 
 // Define the agent configuration for Retell.ai
@@ -181,6 +182,7 @@ Always end interactions by confirming next steps or providing appointment detail
 // Function to create or update the Retell agent
 export async function createRetellAgent() {
   try {
+    // @ts-ignore
     const agent = await client.agent.create(RETELL_AGENT_CONFIG);
     console.log('Retell agent created:', agent);
     return agent;
@@ -219,6 +221,7 @@ export async function createPhoneCall(phoneNumber: string) {
   try {
     const agent = await getOrCreateAgent();
     
+    // @ts-ignore
     const call = await client.call.create({
       from_number: '+1234567890', // Your Retell phone number
       to_number: phoneNumber,

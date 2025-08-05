@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
-import client from '@/lib/retell';
 import { calendarService } from '@/lib/calendar';
 import { dataStore } from '@/lib/datastore';
-import { parseISO, format, addMinutes } from 'date-fns';
+import { format, addMinutes } from 'date-fns';
 import { Appointment } from '@/lib/types';
 
 // Store conversation context per session
